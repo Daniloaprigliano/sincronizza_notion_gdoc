@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Sincronizza Diario Notion → Google Docs</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background: #f9f9f9;
+    }
+    button {
+      font-size: 20px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background-color: #0969da;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0550ae;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔁 Diario culturale</h1>
+  <button onclick="runSync()">Avvia sincronizzazione</button>
+  <p id="status"></p>
+
+  <script>
+    async function runSync() {
+      const status = document.getElementById("status");
+      status.textContent = "⏳ Avvio sincronizzazione in corso...";
+      const res = await fetch("https://api.github.com/repos/Daniloaprigliano/notion-gdocs-sync/actions/workflows/sync.yml/dispatches", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer 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",
+          "Accept": "application/vnd.github+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ ref: "main" })
+      });
+
+      if (res.ok) {
+        status.textContent = "✅ Sincronizzazione avviata con successo!";
+      } else {
+        const error = await res.json();
+        status.textContent = "❌ Errore: " + (error.message || res.statusText);
+      }
+    }
+  </script>
+</body>
+</html>
